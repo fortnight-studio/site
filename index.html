@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortnight Studio — Whatever needs building. Built in fortnights.</title>
+<meta name="description" content="Websites, internal tools, portals, onboarding flows, automations — whatever your business needs built, Fortnight Studio builds it in fixed-price fortnights — most projects need just one. Owned by you forever.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Space+Mono:wght@400;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0B1511;
+  --void-2:#0F1D17;
+  --paper:#F2F4F3;
+  --paper-dim:#9FB0A8;
+  --pine:#2C7A5C;
+  --pine-bright:#3FAF82;
+  --mark:#FFD23F;
+  --signal:#FF5C39;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  background:var(--void);
+  color:var(--paper);
+  font-family:'Public Sans',system-ui,sans-serif;
+  overflow-x:hidden;
+}
+::selection{background:var(--mark);color:var(--void)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--mark);outline-offset:3px;border-radius:4px}
+
+#track{height:1000vh;position:relative}
+
+#stage{position:fixed;inset:0;z-index:1}
+#stage canvas{display:block;width:100%;height:100%}
+
+.grain{
+  position:fixed;inset:-50%;z-index:9;pointer-events:none;opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 7s steps(8) infinite;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}
+  50%{transform:translate(3%,-4%)}75%{transform:translate(-3%,-2%)}100%{transform:translate(0,0)}
+}
+@media(prefers-reduced-motion:reduce){.grain{animation:none}}
+
+.marquee{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  border-bottom:1px solid rgba(242,244,243,.14);
+  background:rgba(11,21,17,.6);backdrop-filter:blur(6px);
+  overflow:hidden;height:34px;display:flex;align-items:center;
+}
+.marquee-inner{
+  display:flex;gap:0;white-space:nowrap;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--paper-dim);
+  animation:marq 28s linear infinite;
+}
+.marquee-inner span{padding:0 1.4em}
+.marquee-inner b{color:var(--mark);font-weight:600}
+@keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.marquee-inner{animation:none}}
+
+.chrome{position:fixed;z-index:20;font-family:'Space Mono',monospace}
+.chrome.tl{top:52px;left:28px;display:flex;align-items:center;gap:10px}
+.logo-tick{
+  width:30px;height:30px;border-radius:7px;background:var(--mark);color:var(--void);
+  display:grid;place-items:center;font-weight:600;font-size:13px;
+}
+.chrome.tl span{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:0}
+.chrome.tr{top:56px;right:28px}
+.skip-link{
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-dim);
+  text-decoration:none;border:1px solid rgba(242,244,243,.25);border-radius:99px;
+  padding:9px 16px;transition:color .2s,border-color .2s,background .2s;
+}
+.skip-link:hover{color:var(--void);background:var(--mark);border-color:var(--mark)}
+
+.rail{
+  position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:20;
+  display:flex;flex-direction:column;gap:7px;align-items:flex-end;
+}
+.rail i{
+  display:block;width:14px;height:2px;background:rgba(242,244,243,.18);
+  transition:background .25s,width .25s;
+}
+.rail i.on{background:var(--mark);width:26px}
+.rail i.wk{height:1px}
+
+.daycount{
+  position:fixed;left:18px;bottom:-2.5vw;z-index:5;pointer-events:none;
+  font-family:'Space Mono',monospace;font-weight:700;
+  font-size:clamp(6rem,19vw,16rem);line-height:1;letter-spacing:-.06em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(242,244,243,.16);
+  user-select:none;
+}
+.daycount b{color:rgba(255,210,63,.14);-webkit-text-stroke:0;font-weight:700}
+.daylabel{
+  position:fixed;left:28px;bottom:calc(2vw + clamp(7rem,22vw,19rem) * .82);z-index:5;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--paper-dim);pointer-events:none;
+}
+
+.panel{
+  position:fixed;z-index:15;opacity:0;pointer-events:none;max-width:620px;
+  will-change:opacity,transform;
+}
+.panel .kick{
+  font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.25em;
+  text-transform:uppercase;color:var(--mark);margin-bottom:14px;display:block;
+  text-shadow:0 1px 6px rgba(7,12,10,.9);
+}
+.panel h1,.panel h2{
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+  line-height:.98;letter-spacing:-.02em;color:#FAFCFB;
+  text-shadow:0 2px 10px rgba(7,12,10,.85), 0 8px 44px rgba(7,12,10,.7);
+}
+.panel p{color:#CEDAD4;font-size:clamp(.95rem,1.4vw,1.1rem);max-width:46ch;margin-top:16px;line-height:1.6;text-shadow:0 1px 6px rgba(7,12,10,.9), 0 4px 22px rgba(7,12,10,.7)}
+
+#p-hero{left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;max-width:1150px;width:92vw}
+#p-hero h1{font-size:clamp(2.6rem,8.4vw,7.2rem)}
+#p-hero p{margin:22px auto 0;font-size:clamp(1rem,1.8vw,1.25rem);max-width:62ch}
+.hl{position:relative;white-space:nowrap;z-index:0;display:inline-block;color:var(--void)}
+.hl::after{
+  content:"";position:absolute;left:-2%;right:-2%;bottom:8%;height:78%;
+  background:var(--mark);z-index:-1;transform:skew(-6deg);
+}
+.scrollhint{
+  margin-top:46px;display:inline-flex;flex-direction:column;align-items:center;gap:10px;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--paper-dim);
+}
+.scrollhint::after{
+  content:"";width:1px;height:54px;background:linear-gradient(var(--mark),transparent);
+  animation:drip 1.6s ease-in-out infinite;
+}
+@keyframes drip{0%{transform:scaleY(.2);transform-origin:top}60%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+@media(prefers-reduced-motion:reduce){.scrollhint::after{animation:none}}
+
+.panel.left{left:6vw;top:50%;transform:translateY(-50%)}
+.panel.right{right:6vw;top:50%;transform:translateY(-50%);text-align:right}
+.panel.right p{margin-left:auto}
+.panel.left h2,.panel.right h2{font-size:clamp(2.2rem,5.5vw,4.4rem)}
+
+#p-launch{left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;max-width:1000px;width:92vw}
+#p-launch h2{font-size:clamp(3rem,10vw,8.5rem);color:var(--mark)}
+#p-launch p{margin:20px auto 0}
+.cta-row{margin-top:38px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;pointer-events:auto}
+.btn{
+  display:inline-block;text-decoration:none;font-weight:600;font-size:16px;
+  padding:16px 34px;border-radius:10px;border:2px solid var(--mark);
+  font-family:'Public Sans',sans-serif;transition:transform .15s,box-shadow .15s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-mark{background:var(--mark);color:var(--void)}
+.btn-mark:hover{box-shadow:0 8px 30px rgba(255,210,63,.35)}
+.btn-line{color:var(--paper);border-color:rgba(242,244,243,.35)}
+.btn-line:hover{border-color:var(--paper)}
+.launch-foot{
+  margin-top:44px;font-family:'Space Mono',monospace;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim);
+}
+
+.vig{position:fixed;inset:0;z-index:4;pointer-events:none;
+  background:radial-gradient(ellipse 90% 75% at 50% 50%, transparent 55%, rgba(7,13,10,.75) 100%)}
+
+/* dynamic dimmer: darkens the 3D scene while copy is on screen, lifts between beats */
+#dimmer{
+  position:fixed;inset:0;z-index:8;pointer-events:none;opacity:0;will-change:opacity;
+  background:radial-gradient(ellipse 85% 85% at 50% 50%, rgba(6,11,9,.94) 0%, rgba(6,11,9,.62) 100%);
+}
+
+@media(max-width:760px){
+  .chrome.tr{display:none}
+  .rail{right:14px}
+  .panel.left,.panel.right{left:6vw;right:6vw;text-align:left;max-width:none}
+  .panel.right p{margin-left:0}
+  .daycount{left:8px}
+  .marquee-inner{font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="vig" aria-hidden="true"></div>
+<div id="dimmer" aria-hidden="true"></div>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-inner">
+    <span>Websites <b>·</b> Internal tools <b>·</b> Portals <b>·</b> Onboarding flows <b>·</b> Automations <b>·</b> Integrations <b>·</b> Built in fortnights <b>·</b> Most need one <b>·</b> Fixed price <b>·</b> You own it <b>·</b></span>
+    <span>Websites <b>·</b> Internal tools <b>·</b> Portals <b>·</b> Onboarding flows <b>·</b> Automations <b>·</b> Integrations <b>·</b> Built in fortnights <b>·</b> Most need one <b>·</b> Fixed price <b>·</b> You own it <b>·</b></span>
+  </div>
+</div>
+
+<div class="chrome tl">
+  <span class="logo-tick" aria-hidden="true">14</span>
+  <span>Fortnight Studio</span>
+</div>
+<div class="chrome tr">
+  <a class="skip-link" href="fortnight-studio.html">Skip the show → studio</a>
+</div>
+
+<div class="rail" id="rail" aria-hidden="true"></div>
+
+<div class="daylabel" aria-hidden="true">Day of build</div>
+<div class="daycount" aria-hidden="true">D<b id="dayNum">01</b></div>
+
+<div id="stage" aria-hidden="true"></div>
+
+<!-- overlay copy -->
+<div class="panel" id="p-hero">
+  <span class="kick">Fortnight Studio · We build the thing</span>
+  <h1>Whatever needs building.<br>Built in <span class="hl">fortnights</span>.</h1>
+  <p>Websites. Internal tools. Customer portals. Onboarding flows. Automations that finally make your systems talk to each other. Most projects take one fortnight; big ones take a few — and every fortnight ends with something live. Those floating pieces? That's your next build. Scroll, and watch one fortnight do its work.</p>
+  <div class="scrollhint">Scroll to start the build</div>
+</div>
+
+<div class="panel left" id="p-d2">
+  <span class="kick">Day 02 · The problem, not the spec</span>
+  <h2>You bring the problem.<br>We bring the build.</h2>
+  <p>No forty-page requirements doc. You tell us what's slow, manual, or held together with copy-and-paste — we work out what to build. Website, tool, app, or all three.</p>
+</div>
+
+<div class="panel right" id="p-d5">
+  <span class="kick">Day 05 · First preview</span>
+  <h2>Working software<br>by Friday.</h2>
+  <p>By day five you're clicking through a real, working version on your own phone — with your real data in it. Not a mockup, not a wireframe, not a promise.</p>
+</div>
+
+<div class="panel left" id="p-d10">
+  <span class="kick">Day 10 · Everything talks</span>
+  <h2>Then we connect<br>all of it.</h2>
+  <p>Forms feed the database. The database feeds the dashboard. Enquiries get answered, invoices send themselves, nothing gets retyped. The copy-and-paste between systems? Gone.</p>
+</div>
+
+<div class="panel right" id="p-d13">
+  <span class="kick">Day 13 · Handover</span>
+  <h2>Yours.<br>Forever.</h2>
+  <p>The code, the data, every login — handed over and documented. No per-seat fees, no renewal rises, no lock-in. If we vanished tomorrow, none of it stops working.</p>
+</div>
+
+<div class="panel" id="p-launch">
+  <span class="kick">Day 14 · Every fortnight ends like this</span>
+  <h2>SHIPPED.</h2>
+  <p>Something live, in your hands, owned by you outright. Most projects need one fortnight. Big ones run as back-to-back fortnights — and every single one ends with a ship day like this.</p>
+  <div class="cta-row">
+    <a class="btn btn-mark" href="fortnight-studio.html">Enter the studio →</a>
+    <a class="btn btn-line" href="mailto:hello@fortnightstudio.co.uk?subject=Build%20enquiry">Book a build call</a>
+  </div>
+  <div class="launch-foot">Clock starts on access · Weekends are yours · Every fortnight ships<br><br>hello@fortnightstudio.co.uk · next slot opens Monday</div>
+</div>
+
+<div id="track" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- progress rail ---------- */
+var rail = document.getElementById('rail');
+var ticks = [];
+for (var r=1;r<=14;r++){
+  var i = document.createElement('i');
+  if (r===6||r===7) i.className='wk';
+  rail.appendChild(i); ticks.push(i);
+}
+
+/* ---------- three.js ---------- */
+var stage = document.getElementById('stage');
+var renderer, scene, camera, sys, blocks=[], edgeMat, gridA, burst, burstMat, keyLight;
+var hasGL = true;
+try{ renderer = new THREE.WebGLRenderer({antialias:true, alpha:false}); }catch(e){ hasGL=false; }
+
+var HEX = {
+  voidBg:0x0B1511, raw1:0x16241D, raw2:0x1D3328, raw3:0x24382E,
+  pine:0x2C7A5C, pineBright:0x3FAF82, paper:0xF2F4F3, paperDim:0x9FB0A8,
+  mark:0xFFD23F, signal:0xFF5C39, panel:0x18281F, gridEdge:0x2F4438
+};
+
+function smooth(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
+
+if (hasGL){
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  stage.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(HEX.voidBg);
+  scene.fog = new THREE.Fog(HEX.voidBg, 20, 52);
+
+  camera = new THREE.PerspectiveCamera(42, window.innerWidth/window.innerHeight, .1, 120);
+
+  scene.add(new THREE.AmbientLight(0xCFE2D8, .6));
+  keyLight = new THREE.DirectionalLight(0xFFFFFF, .85);
+  keyLight.position.set(6,10,8);
+  scene.add(keyLight);
+  var rim = new THREE.DirectionalLight(0x3FAF82, .5);
+  rim.position.set(-8,4,-6);
+  scene.add(rim);
+
+  gridA = new THREE.GridHelper(90, 45, HEX.pine, 0x15291F);
+  gridA.position.y = -6.6;
+  scene.add(gridA);
+
+  edgeMat = new THREE.LineBasicMaterial({color:HEX.gridEdge});
+
+  sys = new THREE.Group();
+  scene.add(sys);
+
+  /* ---- pivots: three screens facing inward, plus world space for the links ---- */
+  var PIVOTS = [
+    {x:-6.1, y:0.5, z:-0.5, a: 0.40},  /* 0 website */
+    {x: 0.0, y:0.5, z: 0.5, a: 0.00},  /* 1 dashboard */
+    {x: 6.0, y:0.3, z:-0.5, a:-0.40},  /* 2 phone */
+    {x: 0.0, y:0.0, z: 0.0, a: 0.00}   /* 3 world (links) */
+  ];
+
+  /* ---- the ecosystem: [pivot, lx, ly, w, h, d, color, day, (rotY override), (isLink)] ---- */
+  var T = [
+    /* === WEBSITE — days 1–4 === */
+    [0, 0,    3.05, 5.6,.42,.25, HEX.paper,   1],
+    [0,-2.45, 3.05, .20,.20,.30, HEX.signal,  1],
+    [0,-2.15, 3.05, .20,.20,.30, HEX.mark,    1],
+    [0,-1.85, 3.05, .20,.20,.30, HEX.pine,    1],
+    [0,-2.00, 2.40, .95,.32,.32, HEX.mark,    2],
+    [0, 1.30, 2.40, .75,.20,.25, HEX.paperDim,2],
+    [0, 2.20, 2.40, .75,.20,.25, HEX.paperDim,2],
+    [0,-0.75, 1.55, 3.7,.55,.32, HEX.paper,   3],
+    [0,-1.15, 0.90, 2.9,.50,.32, HEX.paper,   3],
+    [0,-1.50, 0.35, 2.2,.20,.25, HEX.paperDim,3],
+    [0,-1.85,-0.35, 1.5,.50,.45, HEX.mark,    4],
+    [0, 1.45,-0.40, 2.3,2.50,.35, HEX.pine,   4],
+    [0, 1.45,-0.40, 1.4,1.50,.50, HEX.paper,  4],
+    [0, 0,   -2.85, 5.6,.42,.25, HEX.panel,   4],
+
+    /* === DASHBOARD — days 5–8 === */
+    [1, 0,    2.55, 6.6,.42,.25, HEX.paper,   5],
+    [1,-3.05, 2.55, .20,.20,.30, HEX.signal,  5],
+    [1,-2.75, 2.55, .20,.20,.30, HEX.mark,    5],
+    [1,-2.45, 2.55, .20,.20,.30, HEX.pine,    5],
+    [1,-2.75,-0.20, 1.1,5.00,.20, HEX.panel,  5],
+    [1,-2.75, 1.95, .80,.30,.40, HEX.mark,    6],
+    [1,-2.75, 1.30, .85,.20,.30, HEX.paperDim,6],
+    [1,-2.75, 0.75, .85,.20,.30, HEX.paperDim,6],
+    [1,-2.75, 0.20, .85,.20,.30, HEX.paperDim,6],
+    [1,-1.05, 1.55, 1.75,.95,.30, HEX.paper,  6],
+    [1, 0.75, 1.55, 1.75,.95,.30, HEX.paper,  6],
+    [1, 2.55, 1.55, 1.75,.95,.30, HEX.paper,  7],
+    [1,-1.05, 1.85, .60,.14,.42, HEX.mark,    7],
+    [1, 0.75, 1.85, .60,.14,.42, HEX.pineBright,7],
+    [1, 2.55, 1.85, .60,.14,.42, HEX.mark,    7],
+    [1,-0.50,-0.95, 3.2,2.50,.16, HEX.panel,  7],
+    [1,-1.55,-1.75, .32,.60,.30, HEX.pineBright,7],
+    [1,-1.05,-1.55, .32,1.00,.30, HEX.mark,   8],
+    [1,-0.55,-1.675,.32,.75,.30, HEX.pineBright,8],
+    [1,-0.05,-1.325,.32,1.45,.30, HEX.mark,   8],
+    [1, 0.45,-1.475,.32,1.15,.30, HEX.pineBright,8],
+    [1, 2.35,-0.95, 1.95,2.50,.16, HEX.panel, 8],
+    [1, 2.35,-0.10, 1.65,.20,.25, HEX.paper,  8],
+    [1, 2.35,-0.55, 1.65,.16,.22, HEX.paperDim,8],
+    [1, 2.35,-0.95, 1.65,.16,.22, HEX.paperDim,8],
+    [1, 2.35,-1.35, 1.65,.16,.22, HEX.paperDim,8],
+    [1, 2.35,-1.75, 1.65,.16,.22, HEX.paperDim,8],
+
+    /* === PHONE — days 9–10 === */
+    [2, 0,    0,    2.35,4.90,.30, HEX.panel, 9],
+    [2, 0,    2.18, .70,.12,.40, HEX.raw1,    9],
+    [2, 0,    1.65, 1.90,.55,.40, HEX.mark,   9],
+    [2, 0,    0.85, 1.80,.40,.40, HEX.paper,  9],
+    [2, 0,    0.30, 1.80,.40,.40, HEX.paper, 10],
+    [2, 0,   -0.25, 1.80,.40,.40, HEX.paper, 10],
+    [2, 0,   -1.30, 1.50,.50,.45, HEX.pineBright,10],
+    [2, 0,   -2.10, .90,.10,.40, HEX.paperDim,10],
+
+    /* === THE LINKS — automations & integrations, days 11–12 === */
+    [3,-3.55, 1.00, 1.7,.12,.12, HEX.mark,   11, 0.18, 1],
+    [3, 3.55, 0.85, 1.7,.12,.12, HEX.mark,   11,-0.18, 1],
+    [3,-3.45, 1.00, .30,.30,.30, HEX.mark,   11, 0,    1],
+    [3, 3.45, 0.85, .30,.30,.30, HEX.mark,   11, 0,    1],
+    [3, 0,   -3.55, 12.6,.10,.10, HEX.pineBright,12, 0, 1],
+    [3,-6.10,-2.95, .10,1.20,.10, HEX.pineBright,12, 0, 1],
+    [3, 6.00,-2.80, .10,1.30,.10, HEX.pineBright,12, 0, 1],
+    [3,-6.10,-3.55, .26,.26,.26, HEX.mark,   12, 0,    1],
+    [3, 6.00,-3.55, .26,.26,.26, HEX.mark,   12, 0,    1]
+  ];
+
+  var rng = (function(){ var s=2026; return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; };})();
+  var rawCols = [HEX.raw1, HEX.raw2, HEX.raw3, HEX.pine];
+  var unitGeo = new THREE.BoxGeometry(1,1,1);
+  var unitEdges = new THREE.EdgesGeometry(unitGeo);
+
+  T.forEach(function(t, j){
+    var pv = PIVOTS[t[0]];
+    var a = (t[8]!==undefined) ? t[8] + pv.a : pv.a;
+    var jz = (rng()-0.5)*0.18;
+    var end = new THREE.Vector3(
+      pv.x + t[1]*Math.cos(pv.a) + jz*Math.sin(pv.a),
+      pv.y + t[2],
+      pv.z - t[1]*Math.sin(pv.a) + jz*Math.cos(pv.a)
+    );
+
+    var startHex = rawCols[Math.floor(rng()*rawCols.length)];
+    var mat = new THREE.MeshLambertMaterial({color:startHex});
+    var mesh = new THREE.Mesh(unitGeo, mat);
+    mesh.add(new THREE.LineSegments(unitEdges, edgeMat));
+
+    /* raw-material cloud: a loose drifting field of small parts */
+    var th = rng()*Math.PI*2, ph = (rng()-0.5)*1.9;
+    var rad = 7 + rng()*16;
+    var start = new THREE.Vector3(
+      Math.cos(th)*Math.cos(ph)*rad,
+      Math.sin(ph)*rad*0.55 + 1.2,
+      Math.sin(th)*Math.cos(ph)*rad*0.8
+    );
+    mesh.position.copy(start);
+    mesh.scale.setScalar(0.45);
+    sys.add(mesh);
+
+    var spin = new THREE.Vector3((rng()-0.5)*6,(rng()-0.5)*6,(rng()-0.5)*6);
+    var scatter = new THREE.Vector3((rng()-0.5)*2,(rng()-0.3)*1.6,(rng()-0.5)*2)
+                    .normalize().multiplyScalar(1.5 + rng()*3.5);
+
+    var day = t[7];
+    var t0 = 0.10 + ((day-1)/12) * 0.60 + rng()*0.03;
+
+    blocks.push({
+      mesh:mesh, mat:mat, seed:rng()*6.28,
+      start:start, end:end, endRotY:a,
+      endScale:new THREE.Vector3(t[3], t[4], t[5]),
+      colA:new THREE.Color(startHex), colB:new THREE.Color(t[6]),
+      scatter:scatter, spin:spin, link:!!t[9],
+      t0:t0, t1:t0+0.12
+    });
+  });
+
+  /* launch burst */
+  var N=420, pos=new Float32Array(N*3), vel=[], cols=new Float32Array(N*3), c=new THREE.Color();
+  var palette=[HEX.mark,HEX.paper,HEX.pineBright,HEX.signal];
+  for (var k=0;k<N;k++){
+    pos[k*3]=0; pos[k*3+1]=0.5; pos[k*3+2]=0.5;
+    vel.push(new THREE.Vector3((Math.random()-0.5),(Math.random()-0.2),(Math.random()-0.5)).normalize().multiplyScalar(5+Math.random()*10));
+    c.setHex(palette[k%4]);
+    cols[k*3]=c.r; cols[k*3+1]=c.g; cols[k*3+2]=c.b;
+  }
+  var bg=new THREE.BufferGeometry();
+  bg.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  bg.setAttribute('color', new THREE.BufferAttribute(cols,3));
+  burstMat = new THREE.PointsMaterial({size:.15, vertexColors:true, transparent:true, opacity:0});
+  burst = new THREE.Points(bg, burstMat);
+  burst.userData.vel = vel;
+  sys.add(burst);
+
+  fitSystem();
+}
+
+/* shrink the whole composition on narrow screens so all three screens stay in frame */
+function fitSystem(){
+  if (!hasGL) return;
+  var s = Math.min(1, camera.aspect/1.35);
+  sys.scale.setScalar(Math.max(0.38, s));
+  sys.position.y = (1 - Math.max(0.38, s)) * 0.8;
+}
+
+/* ---------- scroll ---------- */
+var pTarget=0, p = prefersReduced ? 1 : 0;
+function readScroll(){
+  var max = document.documentElement.scrollHeight - window.innerHeight;
+  pTarget = max>0 ? (window.scrollY/max) : 0;
+}
+window.addEventListener('scroll', readScroll, {passive:true});
+readScroll();
+
+var mx=0,my=0,mxT=0,myT=0;
+if (!('ontouchstart' in window)){
+  window.addEventListener('mousemove', function(e){
+    mxT=(e.clientX/window.innerWidth-.5); myT=(e.clientY/window.innerHeight-.5);
+  },{passive:true});
+}
+
+function P(id){ return document.getElementById(id); }
+var panels = [
+  [P('p-hero'),  -1,   -1,  0.035, 0.10 ],
+  [P('p-d2'),    0.13, 0.18, 0.26, 0.31 ],
+  [P('p-d5'),    0.32, 0.37, 0.45, 0.50 ],
+  [P('p-d10'),   0.51, 0.56, 0.63, 0.68 ],
+  [P('p-d13'),   0.69, 0.74, 0.80, 0.84 ],
+  [P('p-launch'),0.885,0.93, 2,    3    ]
+];
+function panelOpacity(pr,a){
+  var fi = a[1]<0 ? 1 : smooth((pr-a[1])/Math.max(a[2]-a[1],.0001));
+  var fo = 1 - smooth((pr-a[3])/Math.max(a[4]-a[3],.0001));
+  return Math.max(0, Math.min(fi,fo));
+}
+
+var dayEl=document.getElementById('dayNum'), lastDay=-1;
+var dimmer=document.getElementById('dimmer');
+
+/* camera: drifts round the parts cloud, lands face-on to the finished ecosystem */
+var camStart={ang:-0.70, rad:15.5, h:3.0};
+var camEnd  ={ang: 0.00, rad:16.2, h:0.8};
+var lookAt = hasGL ? new THREE.Vector3(0,0.5,0) : null;
+var clock0 = performance.now();
+
+function frame(){
+  requestAnimationFrame(frame);
+  var time = (performance.now()-clock0)/1000;
+
+  p += (pTarget-p) * (prefersReduced ? 1 : 0.075);
+  mx += (mxT-mx)*0.06; my += (myT-my)*0.06;
+
+  var day = Math.min(14, Math.max(1, Math.floor(1 + p*14.2)));
+  if (day!==lastDay){
+    dayEl.textContent = (day<10?'0':'')+day;
+    ticks.forEach(function(t,i2){ t.classList.toggle('on', i2<day); });
+    lastDay=day;
+  }
+
+  var maxO=0;
+  for (var i=0;i<panels.length;i++){
+    var a=panels[i], o=panelOpacity(p,a);
+    if (o>maxO) maxO=o;
+    a[0].style.opacity=o;
+    a[0].style.pointerEvents = o>.5?'auto':'none';
+    var dy=(1-o)*22;
+    if (a[0].id==='p-hero'||a[0].id==='p-launch'){
+      a[0].style.transform='translate(-50%, calc(-50% + '+dy+'px))';
+    } else {
+      a[0].style.transform='translateY(calc(-50% + '+dy+'px))';
+    }
+  }
+  dimmer.style.opacity = (maxO*0.74).toFixed(3);
+
+  if (!hasGL) return;
+
+  var ignite = smooth((p-0.88)/0.06);
+
+  /* parts fly in, morph, and lock into the ecosystem */
+  for (var j=0;j<blocks.length;j++){
+    var b=blocks[j];
+    var t = prefersReduced ? 1 : smooth((p-b.t0)/(b.t1-b.t0));
+    var arc = Math.sin(t*Math.PI);
+    var idle = (1-t);
+
+    b.mesh.position.lerpVectors(b.start, b.end, t);
+    b.mesh.position.x += b.scatter.x*arc;
+    b.mesh.position.y += b.scatter.y*arc + Math.sin(time*0.7 + b.seed)*0.28*idle;
+    b.mesh.position.z += b.scatter.z*arc;
+
+    b.mesh.rotation.set(
+      b.spin.x*arc + time*0.15*idle,
+      b.endRotY*t + b.spin.y*arc + time*0.2*idle,
+      b.spin.z*arc
+    );
+
+    var s0 = 0.45;
+    b.mesh.scale.set(
+      s0+(b.endScale.x-s0)*t,
+      s0+(b.endScale.y-s0)*t,
+      s0+(b.endScale.z-s0)*t
+    );
+    b.mat.color.copy(b.colA).lerp(b.colB, t);
+
+    /* automation lines glow at launch */
+    if (b.link){
+      b.mat.emissive.setHex(0x664E00);
+      b.mat.emissive.multiplyScalar(ignite);
+    }
+  }
+
+  var cp = smooth(Math.min(p/0.86,1));
+  var ang = camStart.ang + (camEnd.ang-camStart.ang)*cp + mx*0.12;
+  var rad = camStart.rad + (camEnd.rad-camStart.rad)*cp;
+  var h   = camStart.h   + (camEnd.h - camStart.h)*cp - my*0.8;
+  var fin = smooth((p-0.9)/0.1);
+  rad += fin*2.4;
+  camera.position.set(Math.sin(ang)*rad, h, Math.cos(ang)*rad);
+  camera.lookAt(lookAt);
+
+  gridA.position.z = (p*4)%2;
+
+  edgeMat.color.setHex(ignite>.01 ? HEX.mark : HEX.gridEdge);
+  keyLight.intensity = 0.85 + ignite*0.5;
+
+  var bt=(p-0.92)/0.08;
+  if (bt>0 && bt<=1.4){
+    var positions=burst.geometry.attributes.position.array;
+    var vel=burst.userData.vel;
+    var tt=Math.min(bt,1);
+    for (var n=0;n<vel.length;n++){
+      positions[n*3]  = vel[n].x*tt;
+      positions[n*3+1]= 0.5 + vel[n].y*tt - 2.2*tt*tt;
+      positions[n*3+2]= 0.5 + vel[n].z*tt;
+    }
+    burst.geometry.attributes.position.needsUpdate=true;
+    burstMat.opacity=(1-tt)*0.95;
+  } else {
+    burstMat.opacity=0;
+  }
+
+  renderer.render(scene,camera);
+}
+frame();
+
+window.addEventListener('resize', function(){
+  if (!hasGL) return;
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  fitSystem();
+});
+
+if (prefersReduced){
+  window.scrollTo(0, document.documentElement.scrollHeight);
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortnight Studio — We replace spreadsheets and subscriptions with apps you own</title>
+<meta name="description" content="Fortnight Studio turns the spreadsheet that runs your business into a custom app — in fixed-price fortnights, owned by you forever. No per-seat fees, no subscriptions, no lock-in.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F4F3;
+  --paper-raise:#FFFFFF;
+  --ink:#11201B;
+  --ink-soft:#3D4F48;
+  --pine:#1E5C45;
+  --pine-soft:#E3EDE8;
+  --mark:#FFD23F;
+  --mark-deep:#F5B800;
+  --signal:#E84A1F;
+  --rule:#D5DBD8;
+  --radius:10px;
+  --maxw:1120px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+body{
+  font-family:'Public Sans',system-ui,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    linear-gradient(var(--rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+  background-size:48px 48px;
+  background-attachment:fixed;
+  background-position:center top;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 120% 70% at 50% 0%, rgba(242,244,243,0) 0%, rgba(242,244,243,.92) 78%);
+  z-index:0;
+}
+.page{position:relative;z-index:1}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+a{color:var(--pine)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;line-height:1.05;letter-spacing:-0.015em}
+.mono{font-family:'Space Mono',monospace}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(242,244,243,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.logo-tick{
+  width:30px;height:30px;border-radius:7px;background:var(--ink);
+  display:grid;place-items:center;color:var(--mark);
+  font-family:'Space Mono',monospace;font-weight:600;font-size:13px;
+}
+.logo span{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px}
+.nav-links{display:flex;gap:28px;align-items:center;list-style:none}
+.nav-links a{text-decoration:none;color:var(--ink-soft);font-size:15px;font-weight:500}
+.nav-links a:hover{color:var(--ink)}
+.btn{
+  display:inline-block;font-weight:600;text-decoration:none;
+  border-radius:var(--radius);padding:13px 26px;font-size:16px;
+  transition:transform .15s ease, box-shadow .15s ease;
+  border:2px solid var(--ink);font-family:'Public Sans',sans-serif;cursor:pointer;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-ink{background:var(--ink);color:var(--paper-raise)}
+.btn-ink:hover{box-shadow:0 6px 18px rgba(17,32,27,.25)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-sm{padding:9px 18px;font-size:14px}
+
+/* ---------- hero ---------- */
+.hero{padding:88px 0 56px;text-align:left}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Space Mono',monospace;font-size:13px;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--pine);
+  border:1px solid var(--pine);border-radius:99px;padding:6px 14px;
+  background:var(--pine-soft);margin-bottom:28px;
+}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--pine)}
+.hero h1{font-size:clamp(2.5rem,6.2vw,4.4rem);font-weight:800;max-width:17ch}
+.hl{position:relative;white-space:nowrap;z-index:0}
+.hl::after{
+  content:"";position:absolute;left:-1%;right:-1%;bottom:6%;height:42%;
+  background:var(--mark);z-index:-1;transform:skew(-6deg) scaleX(0);
+  transform-origin:left;animation:swipe .5s .35s ease-out forwards;
+}
+@keyframes swipe{to{transform:skew(-6deg) scaleX(1)}}
+.hero p.lede{font-size:clamp(1.05rem,2vw,1.3rem);color:var(--ink-soft);max-width:56ch;margin:24px 0 36px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero-note{margin-top:18px;font-size:14px;color:var(--ink-soft)}
+.hero-note .mono{color:var(--pine);font-weight:600}
+
+/* ---------- fortnight strip ---------- */
+.strip-section{padding:24px 0 80px}
+.strip-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.strip-head h2{font-size:1.15rem;font-weight:600}
+.strip-head .mono{font-size:13px;color:var(--ink-soft)}
+.strip{
+  display:grid;grid-template-columns:repeat(14,1fr);gap:6px;
+  background:var(--paper-raise);border:1px solid var(--rule);
+  border-radius:14px;padding:14px;box-shadow:0 10px 30px rgba(17,32,27,.07);
+}
+.day{
+  position:relative;border-radius:8px;border:1px solid var(--rule);
+  background:var(--paper);min-height:108px;padding:10px 8px;
+  cursor:pointer;text-align:left;font-family:inherit;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease;
+  opacity:0;transform:translateY(10px);
+}
+.day.in{animation:dayin .4s ease forwards}
+@keyframes dayin{to{opacity:1;transform:translateY(0)}}
+.day:hover{transform:translateY(-3px);border-color:var(--ink)}
+.day .dnum{font-family:'Space Mono',monospace;font-size:12px;font-weight:600;color:var(--ink-soft)}
+.day .dlabel{display:block;font-size:11.5px;font-weight:600;line-height:1.25;margin-top:8px;color:var(--ink)}
+.day.weekend{background:repeating-linear-gradient(-45deg,var(--paper),var(--paper) 5px,#E9ECEA 5px,#E9ECEA 6px)}
+.day.weekend .dlabel{color:var(--ink-soft);font-weight:500}
+.day.launch{background:var(--mark);border-color:var(--mark-deep)}
+.day.launch .dnum{color:var(--ink)}
+.day.launch .dlabel{font-weight:800}
+.day[aria-pressed="true"]{border-color:var(--pine);background:var(--pine-soft)}
+.day.launch[aria-pressed="true"]{background:var(--mark);border-color:var(--ink)}
+.strip-detail{
+  margin-top:14px;background:var(--ink);color:var(--paper);
+  border-radius:12px;padding:20px 24px;display:flex;gap:18px;align-items:baseline;
+  min-height:84px;
+}
+.strip-detail .dd-num{font-family:'Space Mono',monospace;color:var(--mark);font-weight:600;font-size:14px;white-space:nowrap}
+.strip-detail .dd-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:1.05rem;margin-bottom:4px}
+.strip-detail .dd-body{font-size:14.5px;color:#C8D2CD;line-height:1.55}
+
+/* fortnight rules */
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.rule-card{background:var(--ink);color:var(--paper);border-radius:12px;padding:20px 22px}
+.rule-card .rn{font-family:'Space Mono',monospace;color:var(--mark);font-size:12px;letter-spacing:.15em;font-weight:600}
+.rule-card h3{font-size:1.02rem;margin:8px 0 6px;font-weight:600}
+.rule-card p{font-size:13.5px;color:#C8D2CD;line-height:1.55}
+@media(max-width:920px){.rules{grid-template-columns:1fr}}
+
+/* ---------- sections ---------- */
+section{padding:80px 0}
+.sec-eyebrow{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--pine);font-weight:600;margin-bottom:14px}
+.sec-title{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:800;max-width:24ch;margin-bottom:18px}
+.sec-lede{font-size:1.1rem;color:var(--ink-soft);max-width:62ch}
+
+/* problem comparison */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:44px}
+.card{
+  background:var(--paper-raise);border:1px solid var(--rule);border-radius:14px;
+  padding:32px;box-shadow:0 8px 24px rgba(17,32,27,.05);
+}
+.card h3{font-size:1.25rem;font-weight:600;margin-bottom:14px}
+.card ul{list-style:none;display:grid;gap:11px}
+.card li{padding-left:26px;position:relative;font-size:15.5px;color:var(--ink-soft)}
+.card li::before{position:absolute;left:0;top:0;font-family:'Space Mono',monospace;font-weight:600}
+.card.bad li::before{content:"✕";color:var(--signal)}
+.card .tag{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ink-soft)}
+.middle-card{
+  grid-column:1 / -1;background:var(--ink);color:var(--paper);
+  border-radius:14px;padding:36px 32px;text-align:center;
+}
+.middle-card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;max-width:36ch;margin:0 auto 10px}
+.middle-card p{color:#C8D2CD;max-width:62ch;margin:0 auto;font-size:15.5px}
+.middle-card .hl-dark{background:var(--mark);color:var(--ink);padding:0 6px;border-radius:3px}
+
+/* packages */
+.packages{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px;align-items:stretch}
+.pkg{background:var(--paper-raise);border:1px solid var(--rule);border-radius:14px;padding:34px 30px;display:flex;flex-direction:column;position:relative}
+.pkg.feature{border:2px solid var(--ink);box-shadow:0 14px 34px rgba(17,32,27,.12)}
+.pkg .pkg-flag{
+  position:absolute;top:-13px;left:30px;background:var(--mark);color:var(--ink);
+  font-family:'Space Mono',monospace;font-size:12px;font-weight:600;
+  letter-spacing:.05em;padding:4px 12px;border-radius:99px;border:1px solid var(--mark-deep);
+}
+.pkg .pkg-days{font-family:'Space Mono',monospace;font-size:13px;color:var(--pine);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.pkg h3{font-size:1.4rem;font-weight:800;margin:10px 0 4px}
+.pkg .price{font-family:'Bricolage Grotesque',sans-serif;font-size:2.1rem;font-weight:800;margin:10px 0 2px}
+.pkg .price small{font-size:.95rem;font-weight:400;color:var(--ink-soft);font-family:'Public Sans',sans-serif}
+.pkg .pkg-for{font-size:14.5px;color:var(--ink-soft);margin-bottom:20px}
+.pkg ul{list-style:none;display:grid;gap:10px;margin-bottom:28px}
+.pkg li{padding-left:24px;position:relative;font-size:15px;color:var(--ink-soft)}
+.pkg li::before{content:"✓";position:absolute;left:0;color:var(--pine);font-family:'Space Mono',monospace;font-weight:600}
+.pkg .btn{margin-top:auto;text-align:center}
+.care{
+  margin-top:20px;background:var(--pine-soft);border:1px solid var(--pine);
+  border-radius:14px;padding:26px 30px;display:flex;justify-content:space-between;
+  align-items:center;gap:24px;flex-wrap:wrap;
+}
+.care h3{font-size:1.15rem;font-weight:600;margin-bottom:4px}
+.care p{font-size:14.5px;color:var(--ink-soft);max-width:60ch}
+.care .price{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;white-space:nowrap}
+.care .price small{font-size:.85rem;font-weight:400;font-family:'Public Sans',sans-serif;color:var(--ink-soft)}
+
+/* payback calculator */
+.calc{
+  margin-top:20px;background:var(--ink);color:var(--paper);border-radius:14px;
+  padding:36px 32px;display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;
+}
+.calc h3{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+.calc .c-sub{color:#C8D2CD;font-size:15px;max-width:42ch}
+.calc label{display:block;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8FA39B;margin:26px 0 10px}
+.calc .slider-row{display:flex;align-items:center;gap:18px}
+.calc input[type=range]{
+  flex:1;appearance:none;-webkit-appearance:none;height:6px;border-radius:99px;
+  background:linear-gradient(to right, var(--mark) 0%, var(--mark) var(--fill,30%), #2A3B33 var(--fill,30%));
+  outline-offset:6px;cursor:pointer;
+}
+.calc input[type=range]::-webkit-slider-thumb{
+  appearance:none;-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:var(--mark);border:3px solid var(--ink);box-shadow:0 0 0 2px var(--mark);cursor:grab;
+}
+.calc input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:50%;background:var(--mark);border:3px solid var(--ink);box-shadow:0 0 0 2px var(--mark);cursor:grab;
+}
+.calc .spend{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.7rem;min-width:130px;text-align:right}
+.calc .spend small{font-size:.8rem;font-weight:400;color:#8FA39B;font-family:'Public Sans',sans-serif}
+.calc-out{display:grid;gap:14px}
+.calc-out .stat{
+  background:#16261F;border:1px solid #2A3B33;border-radius:12px;padding:18px 22px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+}
+.calc-out .stat span{font-size:14px;color:#C8D2CD}
+.calc-out .stat strong{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;color:var(--mark);white-space:nowrap}
+.calc-out .stat.win strong{color:#7BE0B4}
+.calc-foot{font-family:'Space Mono',monospace;font-size:11px;color:#8FA39B;letter-spacing:.05em}
+
+/* honesty / AI section */
+.ai-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start;margin-top:8px}
+.ai-points{display:grid;gap:0;margin-top:36px;border-top:1px solid var(--rule)}
+.ai-point{display:grid;grid-template-columns:54px 1fr;gap:18px;padding:24px 0;border-bottom:1px solid var(--rule)}
+.ai-point .ai-ic{
+  width:44px;height:44px;border-radius:10px;background:var(--paper-raise);
+  border:1px solid var(--rule);display:grid;place-items:center;
+  font-family:'Space Mono',monospace;font-weight:600;color:var(--pine);font-size:15px;
+}
+.ai-point h3{font-size:1.05rem;font-weight:600;margin-bottom:4px}
+.ai-point p{font-size:15px;color:var(--ink-soft)}
+.receipt{
+  background:var(--paper-raise);border:1px solid var(--rule);border-radius:14px;
+  padding:30px;font-family:'Space Mono',monospace;font-size:14px;
+  box-shadow:0 10px 30px rgba(17,32,27,.07);position:sticky;top:96px;
+}
+.receipt .r-head{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--ink-soft);border-bottom:1px dashed var(--rule);padding-bottom:12px;margin-bottom:14px}
+.receipt .r-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;color:var(--ink-soft)}
+.receipt .r-row strong{color:var(--ink);font-weight:600}
+.receipt .r-row.total{border-top:1px dashed var(--rule);margin-top:12px;padding-top:14px}
+.receipt .r-row.total strong{color:var(--pine)}
+.receipt .stamp{
+  margin-top:18px;display:inline-block;transform:rotate(-4deg);
+  border:2px solid var(--pine);color:var(--pine);border-radius:6px;
+  padding:5px 12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;
+}
+
+/* founder */
+.founder-grid{display:grid;grid-template-columns:300px 1fr;gap:44px;align-items:center;margin-top:44px}
+.founder-photo{
+  aspect-ratio:1/1;border-radius:16px;background:var(--ink);position:relative;overflow:hidden;
+  display:grid;place-items:center;box-shadow:0 14px 34px rgba(17,32,27,.18);
+}
+.founder-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.founder-photo .ph-mark{
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:6rem;color:var(--mark);line-height:1;
+}
+.founder-photo .ph-note{
+  position:absolute;bottom:14px;left:0;right:0;text-align:center;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;color:#8FA39B;
+}
+.founder-copy p{color:var(--ink-soft);font-size:1.05rem;max-width:58ch}
+.founder-copy p+p{margin-top:14px}
+.founder-copy .f-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;color:var(--ink);margin-bottom:12px}
+.proof-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.proof-chips span{
+  font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;
+  background:var(--pine-soft);border:1px solid var(--pine);color:var(--pine);
+  border-radius:99px;padding:7px 14px;font-weight:500;
+}
+@media(max-width:760px){.founder-grid{grid-template-columns:1fr;gap:24px}.founder-photo{max-width:300px}}
+
+/* ethos */
+.ethos-list{display:grid;gap:0;margin-top:40px;border-top:1px solid var(--rule)}
+.ethos-item{display:grid;grid-template-columns:80px 1fr;gap:20px;padding:30px 0;border-bottom:1px solid var(--rule)}
+.ethos-item .e-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:2rem;color:var(--ink);opacity:.18;line-height:1}
+.ethos-item h3{font-size:1.25rem;font-weight:600;margin-bottom:6px}
+.ethos-item p{color:var(--ink-soft);font-size:15.5px;max-width:64ch}
+
+/* CTA */
+.cta-block{
+  background:var(--ink);border-radius:20px;padding:64px 48px;text-align:center;color:var(--paper);
+  position:relative;overflow:hidden;
+}
+.cta-block::before{
+  content:"";position:absolute;inset:0;opacity:.07;
+  background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.cta-block>*{position:relative}
+.cta-block h2{font-size:clamp(1.9rem,4.5vw,3rem);font-weight:800;margin-bottom:14px}
+.cta-block p{color:#C8D2CD;max-width:56ch;margin:0 auto 32px;font-size:1.05rem}
+.cta-block .btn-mark{background:var(--mark);color:var(--ink);border-color:var(--mark)}
+.cta-block .btn-mark:hover{box-shadow:0 6px 22px rgba(255,210,63,.35)}
+.cta-block .sub{margin-top:18px;font-size:14px;color:#8FA39B}
+
+footer{padding:48px 0 64px;border-top:1px solid var(--rule);margin-top:80px}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;color:var(--ink-soft);font-size:14px}
+
+@media(max-width:920px){
+  .packages{grid-template-columns:1fr}
+  .ai-grid{grid-template-columns:1fr}
+  .receipt{position:static}
+  .split{grid-template-columns:1fr}
+  .calc{grid-template-columns:1fr;gap:26px}
+}
+@media(max-width:760px){
+  .nav-links li:not(.nav-cta){display:none}
+  .strip{grid-template-columns:repeat(7,1fr);gap:5px;padding:10px}
+  .day{min-height:88px;padding:8px 6px}
+  .day .dlabel{font-size:10.5px}
+  .hero{padding:56px 0 40px}
+  .ethos-item{grid-template-columns:48px 1fr}
+  .strip-detail{flex-direction:column;gap:8px}
+  .cta-block{padding:48px 24px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="Fortnight Studio home">
+      <span class="logo-tick" aria-hidden="true">14</span>
+      <span>Fortnight Studio</span>
+    </a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="#how">The fortnight</a></li>
+        <li><a href="#packages">Pricing</a></li>
+        <li><a href="#payback">Payback</a></li>
+        <li><a href="#how-we-build">How we build</a></li>
+        <li><a href="#ethos">Ethos</a></li>
+        <li class="nav-cta"><a class="btn btn-ink btn-sm" href="#book">Book a rescue call</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Now booking · next slot opens Monday</span>
+    <h1>The spreadsheet that runs your business? <span class="hl">Retire it.</span></h1>
+    <p class="lede">We turn the spreadsheets and the £300-a-month subscription stack into one custom app — built around how your business actually works. Fixed price, built in fortnights — a Spreadsheet Rescue needs just one — and you own it outright. No per-seat fees. No price rises. Ever.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-ink" href="#book">Book a rescue call</a>
+      <a class="btn btn-ghost" href="#how">See the 14 days</a>
+    </div>
+    <p class="hero-note">One project at a time. <span class="mono">Every fortnight ends with working software.</span> Live, not a progress report.</p>
+  </div>
+</div>
+
+<!-- FORTNIGHT STRIP -->
+<div class="strip-section" id="how">
+  <div class="wrap">
+    <div class="strip-head">
+      <h2>What happens in a build fortnight</h2>
+      <span class="mono">Tap a day to see the work ↓</span>
+    </div>
+    <div class="strip" role="group" aria-label="The 14-day build schedule">
+      <button class="day" data-d="1" aria-pressed="true"><span class="dnum">D01</span><span class="dlabel">Kickoff call</span></button>
+      <button class="day" data-d="2" aria-pressed="false"><span class="dnum">D02</span><span class="dlabel">The sheet autopsy</span></button>
+      <button class="day" data-d="3" aria-pressed="false"><span class="dnum">D03</span><span class="dlabel">Blueprint agreed</span></button>
+      <button class="day" data-d="4" aria-pressed="false"><span class="dnum">D04</span><span class="dlabel">First build pass</span></button>
+      <button class="day" data-d="5" aria-pressed="false"><span class="dnum">D05</span><span class="dlabel">Preview, real data</span></button>
+      <button class="day weekend" data-d="6" aria-pressed="false"><span class="dnum">D06</span><span class="dlabel">You test. We rest.</span></button>
+      <button class="day weekend" data-d="7" aria-pressed="false"><span class="dnum">D07</span><span class="dlabel">You test. We rest.</span></button>
+      <button class="day" data-d="8" aria-pressed="false"><span class="dnum">D08</span><span class="dlabel">Your changes, made</span></button>
+      <button class="day" data-d="9" aria-pressed="false"><span class="dnum">D09</span><span class="dlabel">Automations wired</span></button>
+      <button class="day" data-d="10" aria-pressed="false"><span class="dnum">D10</span><span class="dlabel">Full data import</span></button>
+      <button class="day" data-d="11" aria-pressed="false"><span class="dnum">D11</span><span class="dlabel">Logins &amp; permissions</span></button>
+      <button class="day" data-d="12" aria-pressed="false"><span class="dnum">D12</span><span class="dlabel">Team trial run</span></button>
+      <button class="day" data-d="13" aria-pressed="false"><span class="dnum">D13</span><span class="dlabel">Sign-off &amp; handover</span></button>
+      <button class="day launch" data-d="14" aria-pressed="false"><span class="dnum">D14</span><span class="dlabel">SHEET RETIRED 🎉</span></button>
+    </div>
+    <div class="strip-detail" aria-live="polite">
+      <span class="dd-num" id="dd-num">DAY 01</span>
+      <div>
+        <div class="dd-title" id="dd-title">Kickoff call</div>
+        <div class="dd-body" id="dd-body">A 45-minute call — that's the only meeting. You walk us through the spreadsheet (or the subscription you're sick of paying for), who uses it, and what goes wrong. We agree what counts as done.</div>
+      </div>
+    </div>
+    <div class="rules">
+      <div class="rule-card">
+        <span class="rn">RULE 01</span>
+        <h3>The clock starts on access</h3>
+        <p>Day 1 is the day we have your content, data and logins — not the day the invoice is paid. Our Day-1 checklist makes getting there quick.</p>
+      </div>
+      <div class="rule-card">
+        <span class="rn">RULE 02</span>
+        <h3>Weekends are yours</h3>
+        <p>Days 6 and 7 are review windows, not build days. You test, we rest, and your change list lands Monday morning — no meetings required.</p>
+      </div>
+      <div class="rule-card">
+        <span class="rn">RULE 03</span>
+        <h3>Every fortnight ships</h3>
+        <p>Small builds take one fortnight. Big ones run as back-to-back fortnights — and every single one ends with working software live, not a progress report.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="wrap">
+    <p class="sec-eyebrow">The problem</p>
+    <h2 class="sec-title">Your business runs on borrowed time and rented software.</h2>
+    <p class="sec-lede">Nearly every small business we meet runs on one of two things — and usually both. A spreadsheet held together by hope, and a stack of subscriptions that does 10% of what you pay for.</p>
+    <div class="split">
+      <div class="card bad">
+        <h3><span class="tag">Exhibit A</span>The Spreadsheet</h3>
+        <ul>
+          <li>One person understands it — and they're on holiday</li>
+          <li>Breaks silently; you find out when a customer does</li>
+          <li>No audit trail, no permissions, no "who changed this?"</li>
+          <li>Unusable on a phone, on site, or in a van</li>
+          <li>One sort-gone-wrong from disaster</li>
+        </ul>
+      </div>
+      <div class="card bad">
+        <h3><span class="tag">Exhibit B</span>The Subscription Stack</h3>
+        <ul>
+          <li>£50–£500 a month, forever, for features you don't use</li>
+          <li>Per-seat pricing that punishes you for growing</li>
+          <li>Price rises every renewal — and you can't leave</li>
+          <li>Your data lives in their system, not yours</li>
+          <li>Built for everyone, so it fits no one</li>
+        </ul>
+      </div>
+      <div class="middle-card">
+        <h3>The third option: software built around how <span class="hl-dark">you</span> work. Pay once. Own it forever.</h3>
+        <p>One senior builder using modern AI tooling to deliver in a fortnight what custom software houses quote months and five figures for — with every decision reviewed by a human who's spent years replacing spreadsheets inside real businesses.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section id="packages">
+  <div class="wrap">
+    <p class="sec-eyebrow">Fixed prices, published here</p>
+    <h2 class="sec-title">The price on the site is the price on the invoice.</h2>
+    <p class="sec-lede">Three packages, each with a published day-count. No quotes, no "POA", no creeping scope. If your project doesn't fit a package, we'll tell you on the kickoff call — before you've paid a penny.</p>
+
+    <div class="packages">
+      <div class="pkg">
+        <span class="pkg-days">One fortnight</span>
+        <h3>Spreadsheet Rescue</h3>
+        <p class="price">£2,950 <small>fixed, once</small></p>
+        <p class="pkg-for">One business-critical spreadsheet, reborn as a proper app.</p>
+        <ul>
+          <li>Your sheet's logic rebuilt as a secure web app</li>
+          <li>Multi-user with roles &amp; permissions</li>
+          <li>Works on phones, tablets, and in the field</li>
+          <li>Your existing data imported and verified</li>
+          <li>Audit trail — who changed what, when</li>
+          <li>Automatic backups, no more "FINAL_v7.xlsx"</li>
+        </ul>
+        <a class="btn btn-ghost" href="#book">Rescue my spreadsheet</a>
+      </div>
+
+      <div class="pkg feature">
+        <span class="pkg-flag">Most booked</span>
+        <span class="pkg-days">Two fortnights</span>
+        <h3>Subscription Killer</h3>
+        <p class="price">From £5,950 <small>fixed, once</small></p>
+        <p class="pkg-for">Replace the SaaS tool you're renting with one you own.</p>
+        <ul>
+          <li>Just the features you actually use — done your way</li>
+          <li>Automations: reminders, reports, notifications</li>
+          <li>Connects to the tools you're keeping</li>
+          <li>Unlimited users — no per-seat fees, ever</li>
+          <li>Your full data migrated out of their system</li>
+          <li>Typical payback inside 18 months — then it's free</li>
+        </ul>
+        <a class="btn btn-ink" href="#book">Kill a subscription</a>
+      </div>
+
+      <div class="pkg">
+        <span class="pkg-days">Scoped in fortnights</span>
+        <h3>Ops Platform</h3>
+        <p class="price">From £9,950 <small>fixed, once</small></p>
+        <p class="pkg-for">Several sheets and tools, unified into one system.</p>
+        <ul>
+          <li>Jobs, staff, stock, customers — one source of truth</li>
+          <li>Customer portals &amp; staff logins</li>
+          <li>Dashboards that answer "how are we doing?"</li>
+          <li>Runs as back-to-back fortnights — each one ships live</li>
+          <li>Fixed scope, fixed price, agreed in writing</li>
+        </ul>
+        <a class="btn btn-ghost" href="#book">Scope my platform</a>
+      </div>
+    </div>
+
+    <div class="care">
+      <div>
+        <h3>Care Plan — hosting, backups, and a builder on call</h3>
+        <p>Secure hosting, monitoring, backups, and up to 2 hours of changes every month. Cancel any time — and because you own everything, the app stays yours if you do. Try doing that with your current subscriptions.</p>
+      </div>
+      <p class="price">£99<small>/month</small></p>
+    </div>
+
+    <!-- PAYBACK CALCULATOR -->
+    <div class="calc" id="payback">
+      <div>
+        <h3>Do the maths on your subscriptions.</h3>
+        <p class="c-sub">Drag to what you currently spend per month on the tools a custom build would replace — CRMs, job schedulers, form builders, booking systems, the lot.</p>
+        <label for="spend">Your monthly subscription spend</label>
+        <div class="slider-row">
+          <input type="range" id="spend" min="50" max="1000" step="10" value="300" aria-describedby="payback-months">
+          <span class="spend" id="spendOut">£300<small>/mo</small></span>
+        </div>
+      </div>
+      <div class="calc-out">
+        <div class="stat">
+          <span>Subscription Killer pays for itself in</span>
+          <strong id="payback-months">20 months</strong>
+        </div>
+        <div class="stat win">
+          <span>Your saving over 5 years</span>
+          <strong id="saving5">£12,050</strong>
+        </div>
+        <p class="calc-foot">Based on the £5,950 Subscription Killer build + £99/mo Care Plan, vs. your current spend continuing. Excludes the inevitable SaaS price rises — so the real number is better.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW WE BUILD / AI HONESTY -->
+<section id="how-we-build">
+  <div class="wrap">
+    <p class="sec-eyebrow">How we build</p>
+    <h2 class="sec-title">Yes, we use AI. Here's exactly how.</h2>
+    <div class="ai-grid">
+      <div>
+        <p class="sec-lede">We're not hiding it — it's the whole reason custom software now costs thousands, not tens of thousands. AI tooling does the heavy lifting; years of building real business systems does the judging. You get the speed without the slop.</p>
+        <div class="ai-points">
+          <div class="ai-point">
+            <span class="ai-ic" aria-hidden="true">AI</span>
+            <div>
+              <h3>AI does the volume</h3>
+              <p>Drafting code, building screens, writing tests, migrating data. The repetitive 80% that used to take a dev team months.</p>
+            </div>
+          </div>
+          <div class="ai-point">
+            <span class="ai-ic" aria-hidden="true">HU</span>
+            <div>
+              <h3>A human does the judgement</h3>
+              <p>Data design, security, permissions, what your team will actually use on a wet Tuesday. Every line reviewed before you see it.</p>
+            </div>
+          </div>
+          <div class="ai-point">
+            <span class="ai-ic" aria-hidden="true">YOU</span>
+            <div>
+              <h3>You get the savings</h3>
+              <p>Faster builds mean software-house quality at a fraction of the price — that's the deal. We don't charge 2019 prices for 2026 speed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="receipt" aria-label="What you own at handover">
+        <p class="r-head">Handover receipt · what you own</p>
+        <div class="r-row"><span>Source code (full repo)</span><strong>Yours</strong></div>
+        <div class="r-row"><span>Database &amp; every record</span><strong>Yours</strong></div>
+        <div class="r-row"><span>Hosting account &amp; logins</span><strong>Yours</strong></div>
+        <div class="r-row"><span>Documentation</span><strong>Yours</strong></div>
+        <div class="r-row"><span>Per-seat fees</span><strong>None</strong></div>
+        <div class="r-row"><span>Renewal price rises</span><strong>Never</strong></div>
+        <div class="r-row total"><span>Owned by you</span><strong>100%</strong></div>
+        <span class="stamp">Pay once · Own forever</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder">
+  <div class="wrap">
+    <p class="sec-eyebrow">Who you're dealing with</p>
+    <h2 class="sec-title">Fortnight is one person. That's the point.</h2>
+    <div class="founder-grid">
+      <div class="founder-photo">
+        <!-- Replace the two lines below with: <img src="leesy.jpg" alt="Leesy, founder of Fortnight Studio"> -->
+        <span class="ph-mark" aria-hidden="true">L.</span>
+        <span class="ph-note">your photo here</span>
+      </div>
+      <div class="founder-copy">
+        <p class="f-name">Hi — I'm Leesy.</p>
+        <p>By day I'm the technology director of a UK staffing and events group, where I've spent years doing exactly what Fortnight does: replacing the spreadsheets, duct tape and subscription sprawl of a real, messy, fast-moving business with systems hundreds of people rely on every week.</p>
+        <p>Fortnight is that experience, productised. When you book a build, you get me — not a junior, not an account manager, not a ticket queue. One builder, your project, a fortnight at a time. And because I run technology for a living, I build like someone who has to live with the consequences: secure, documented, and handed over properly.</p>
+        <div class="proof-chips">
+          <span>Workforce timekeeping for major UK festivals</span>
+          <span>Compliance automation in production</span>
+          <span>Payment &amp; onboarding flows</span>
+          <span>15+ years in the trenches</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETHOS -->
+<section id="ethos">
+  <div class="wrap">
+    <p class="sec-eyebrow">Ethos</p>
+    <h2 class="sec-title">Five things we won't budge on.</h2>
+    <div class="ethos-list">
+      <div class="ethos-item">
+        <span class="e-num" aria-hidden="true">01</span>
+        <div>
+          <h3>Shipped beats perfect</h3>
+          <p>Every project has a go-live date before it starts. An app your team is using beats a requirements document every single time.</p>
+        </div>
+      </div>
+      <div class="ethos-item">
+        <span class="e-num" aria-hidden="true">02</span>
+        <div>
+          <h3>One builder, full attention</h3>
+          <p>No account managers, no handoffs, no "I'll check with the dev team." You talk directly to the person building your system — and we take one project at a time.</p>
+        </div>
+      </div>
+      <div class="ethos-item">
+        <span class="e-num" aria-hidden="true">03</span>
+        <div>
+          <h3>AI is the leverage, not the product</h3>
+          <p>We use AI to move at ten times the speed. We use experience to make sure it's right. You should never be able to tell which is which.</p>
+        </div>
+      </div>
+      <div class="ethos-item">
+        <span class="e-num" aria-hidden="true">04</span>
+        <div>
+          <h3>Own, don't rent</h3>
+          <p>Your code, your database, your logins. No per-seat fees, no renewal rises, no hostage data. If we vanished tomorrow, your app wouldn't. That's the test every decision has to pass.</p>
+        </div>
+      </div>
+      <div class="ethos-item">
+        <span class="e-num" aria-hidden="true">05</span>
+        <div>
+          <h3>Honest scope, honest price</h3>
+          <p>Prices are published on this page. If something will cost more, you'll know before we start — never after.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="book">
+  <div class="wrap">
+    <div class="cta-block">
+      <h2>Fourteen days from now,<br>the spreadsheet retires.</h2>
+      <p>Book a free 20-minute rescue call. Show us the sheet — or the subscription bill — and we'll tell you which package fits, what it costs, and the exact day it goes live. Or tell you straight if you're better off where you are.</p>
+      <a class="btn btn-mark" href="mailto:hello@fortnightstudio.co.uk?subject=Spreadsheet%20rescue%20enquiry">Book your rescue call</a>
+      <p class="sub">hello@fortnightstudio.co.uk · No obligation, no hard sell, no discovery phase.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="#top" aria-label="Fortnight Studio home">
+      <span class="logo-tick" aria-hidden="true">14</span>
+      <span>Fortnight Studio</span>
+    </a>
+    <p>© 2026 Fortnight Studio · Apps that replace spreadsheets &amp; subscriptions · Built in fortnights, owned by you forever. <br>Need a website too? Same deal — fixed price, fixed fortnight.</p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var details = {
+    1:["Kickoff call","A 45-minute call — that's the only meeting. You walk us through the spreadsheet (or the subscription you're sick of paying for), who uses it, and what goes wrong. We agree what counts as done."],
+    2:["The sheet autopsy","We go through your spreadsheet cell by cell — every column, every formula, every workaround only one person understands. We find the job it's actually doing, including the parts nobody wrote down."],
+    3:["Blueprint agreed","You get a one-page plan: every screen, who can see what, and what happens automatically. Plain English, no diagrams that need a translator. One quick yes and the build starts."],
+    4:["First build pass","Heads down. The data structure, core screens, and main workflows take shape — with a sample of your real data in from day one, not lorem ipsum."],
+    5:["Preview, real data","You get a private link on your own phone with your actual records in it. Click around, try to break it, show the person who runs the spreadsheet — their feedback is gold."],
+    6:["You test. We rest.","The weekend is yours to put it through its paces. No meetings — just reply with a list, a voice note, or scribbles on screenshots. Whatever's easiest."],
+    7:["You test. We rest.","Same as Day 6. Take your time — your change list lands Monday morning and we get straight to it."],
+    8:["Your changes, made","Every note from your weekend testing gets actioned. You'll get a reply confirming each one — done, or a better suggestion with a reason."],
+    9:["Automations wired","The jobs the spreadsheet could never do: automatic reminders, scheduled reports, email notifications, and connections to the tools you're keeping — tested end-to-end."],
+    10:["Full data import","Your complete history comes across — cleaned, de-duplicated, and verified against the original. The spreadsheet stays untouched as a fallback until you say otherwise."],
+    11:["Logins & permissions","Everyone gets their own login. Roles set who can see and change what, and the audit trail records every change. The 'who broke the spreadsheet' era ends here."],
+    12:["Team trial run","Your team uses the app for real, side by side with the old sheet. Friction points get fixed the same day — this is where good becomes 'actually nicer than the spreadsheet'."],
+    13:["Sign-off & handover","You say go. The handover pack lands in your inbox: every login, the code, the database, plain-English documentation. All yours, from day one."],
+    14:["Sheet retired 🎉","The app goes live and the spreadsheet gets its retirement do — archived read-only, never deleted. We monitor through the first day. Day 14 means Day 14."]
+  };
+  var days = document.querySelectorAll('.day');
+  var num = document.getElementById('dd-num');
+  var title = document.getElementById('dd-title');
+  var body = document.getElementById('dd-body');
+  days.forEach(function(btn, i){
+    btn.style.animationDelay = (i * 0.05) + 's';
+    btn.addEventListener('click', function(){
+      days.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      var d = btn.getAttribute('data-d');
+      num.textContent = 'DAY ' + (d < 10 ? '0'+d : d);
+      title.textContent = details[d][0];
+      body.textContent = details[d][1];
+    });
+  });
+  var strip = document.querySelector('.strip');
+  function revealDays(){ days.forEach(function(b){ b.classList.add('in'); }); }
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ revealDays(); io.disconnect(); } });
+    },{threshold:.2});
+    io.observe(strip);
+  } else { revealDays(); }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){ revealDays(); }
+
+  /* payback calculator */
+  var BUILD = 5950, CARE = 99;
+  var slider = document.getElementById('spend');
+  var spendOut = document.getElementById('spendOut');
+  var pbOut = document.getElementById('payback-months');
+  var svOut = document.getElementById('saving5');
+  function fmt(n){ return '£' + n.toLocaleString('en-GB'); }
+  function recalc(){
+    var m = parseInt(slider.value, 10);
+    spendOut.innerHTML = fmt(m) + '<small>/mo</small>';
+    var net = m - CARE;
+    if (net <= 0){
+      pbOut.textContent = '—';
+      svOut.textContent = 'Keep your subs!';
+    } else {
+      var months = Math.ceil(BUILD / net);
+      pbOut.textContent = months + ' months';
+      var saving = (m * 60) - (BUILD + CARE * 60);
+      svOut.textContent = saving > 0 ? fmt(saving) : '—';
+    }
+    var pct = ((m - 50) / (1000 - 50)) * 100;
+    slider.style.setProperty('--fill', pct + '%');
+  }
+  slider.addEventListener('input', recalc);
+  recalc();
+})();
+</script>
+</body>
+</html>
