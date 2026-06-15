@@ -1,0 +1,23 @@
+# Leesy Studio
+
+> Leesy Studio builds custom software — websites, internal tools, customer portals, onboarding flows, automations — for UK small businesses. Fixed-price two-week ("fortnight") builds. The client owns everything: code, data, logins. No per-seat fees, no subscriptions, no lock-in.
+
+Founder: Mark Lees ("Leesy"). Based in Manchester, UK. One senior builder, AI-leveraged, one project at a time. Contact: leesy@leesystudio.com
+
+## What we do
+- Replace the spreadsheet that runs a business with a proper, owned, multi-user web app.
+- Replace rented SaaS subscriptions with software the client owns outright.
+- Build websites, internal tools, customer portals, automations and integrations.
+
+## Packages (fixed price, published on the site)
+- Spreadsheet Rescue — £2,950 — one business-critical spreadsheet rebuilt as a secure multi-user web app. One fortnight.
+- Subscription Killer — from £5,950 — replace a SaaS tool you rent with one you own. Two fortnights.
+- Ops Platform — from £9,950 — several sheets and tools unified into one system.
+- Care Plan — £99/month — hosting, backups, monitoring, up to 2 hours of changes/month. Cancel anytime; you keep everything.
+
+## How it works (the fortnight)
+A fixed-price build delivered in a two-week cycle. Day 1 starts when access (content, data, logins) is provided. Weekends are review windows. Every fortnight ends with working software live, not a progress report. Pay 50% to book the slot, 50% at sign-off. IP transfers to the client on final payment.
+
+## Links
+- Home: https://leesystudio.com/
+- Pricing & how it works: https://leesystudio.com/studio.html
